@@ -1,18 +1,25 @@
+import time, urllib
+
 class CookieError(StandardError):
     pass
 
-ATTRIBUTES = [
+OPTIONAL_ATTRIBUTES = [
     'expires', 'path', 'comment', 'domain', 'max-age', 'secure',
     'version', 'httponly',
 ]
+ALL_ATTRIBUTES = [
+    'name', 'value'
+] + OPTIONAL_ATTRIBUTES
 
-ATTRIBUTES_DICT = {}
-
-for key in ATTRIBUTES:
-    ATTRIBUTES_DICT[key] = True
+OPTIONAL_ATTRIBUTES_DICT = {}
+for key in OPTIONAL_ATTRIBUTES:
+    OPTIONAL_ATTRIBUTES_DICT[key] = True
+ALL_ATTRIBUTES_DICT = {}
+for key in ALL_ATTRIBUTES:
+    ALL_ATTRIBUTES_DICT[key] = True
 del key
 
-class RawCookie:
+class RawCookie(object):
     '''An unaltered cookie from a Set-Cookie header.
     
     Only those attributes that were set in the header are present.
@@ -21,22 +28,39 @@ class RawCookie:
     '''
     
     def __init__(self, name, value, **attributes):
+        # Apparently cherrypy changes max-age to Max-Age at some point.
+        # And this is how it is spelled in RFC too.
+        converted_attributes = {}
         for key in attributes:
-            if not key in ATTRIBUTES_DICT:
-                raise ValueError("Unrecognized cookie attribute: " + str(key))
+            key_lower = key.lower().replace('_', '-')
+            if not key_lower in OPTIONAL_ATTRIBUTES_DICT:
+                if key_lower in ALL_ATTRIBUTES_DICT:
+                    raise ValueErrror("Tried passing a required attribute as an optional attribute: " + str(key))
+                else:
+                    raise ValueError("Unrecognized cookie attribute: " + str(key))
+            converted_attributes[key_lower] = attributes[key]
         self.name = name
         self.value = value
-        self.attributes = attributes
+        # maybe we should only do type conversion in parsers
+        if converted_attributes.has_key('max-age'):
+            # XXX check if RFC allows floating point max-age
+            converted_attributes['max-age'] = float(converted_attributes['max-age'])
+        self.attributes = converted_attributes
     
     def __getattr__(self, key):
-        if not key in ATTRIBUTES_DICT:
+        key = key.lower()
+        if not key in OPTIONAL_ATTRIBUTES_DICT:
             raise AttributeError("Unrecognized cookie attribute: " + str(key))
         return self.attributes.get(key, None)
     
     def __setattr__(self, key, value):
-        if not key in ATTRIBUTES_DICT:
-            raise AttributeError("Unrecognized cookie attribute: " + str(key))
-        self.attributes[key] = value
+        if key in ('attributes', 'name', 'value'):
+            object.__setattr__(self, key, value)
+        else:
+            key_lower = key.lower()
+            if not key_lower in OPTIONAL_ATTRIBUTES_DICT:
+                raise AttributeError("Unrecognized cookie attribute: " + str(key))
+            self.attributes[key_lower] = value
 
 class Cookie(RawCookie):
     '''A canonicalized cookie.
@@ -53,24 +77,34 @@ class Cookie(RawCookie):
     (http://mrcoles.com/blog/cookies-max-age-vs-expires/)
     '''
 
-class LiveCookie(Cookie):
+class LiveCookie(RawCookie):
     '''A cookie that tracks its expiration time.'''
-
-class Cookie:
-    def __init__(self, name, value,
-        expires=None, path=None, comment=None, domain=None, max_age=None,
-        secure=None, version=None, httponly=None
-    ):
-        self.name = name
-        self.value = value
-        self.expires = expires
-        self.path = path
-        self.comment = comment
-        self.domain = domain
-        self.max_age = max_age
-        self.secure = secure
-        self.version = version
-        self.httponly = httponly
+    
+    def __init__(self, name, value, **attributes):
+        self.issue_time = time.time()
+        RawCookie.__init__(self, name, value, **attributes)
+    
+    def valid(self):
+        expires = self.expires
+        if expires is None:
+            # valid until the end of session
+            # assume as long as we're alive, we are in the session
+            return True
+        return expires < time.time()
+    
+    @property
+    def expires(self):
+        max_age = self.attributes.get('max-age')
+        if max_age is not None:
+            expires = self.issue_time + max_age
+        else:
+            expires = self.attributes.get('expires')
+    
+    def __setattr__(self, key, value):
+        if key == 'issue_time':
+            object.__setattr__(self, key, value)
+        else:
+            RawCookie.__setattr__(self, key, value)
 
 class CookieParser:
     @staticmethod
@@ -80,7 +114,8 @@ class CookieParser:
         kwargs = {}
         for attr in attrs[1:]:
             attr_name, attr_value = [field.strip() for field in attr.split('=')]
-            if not attr_name in ATTRIBUTES_DICT:
+            attr_name = attr_name.lower()
+            if not attr_name in OPTIONAL_ATTRIBUTES_DICT:
                 raise CookieError, "Invalid cookie attribute: %s in cookie: %s" % (attr_name, text)
             kwargs[attr_name.replace('-', '_')] = attr_value
         return Cookie(name, value, **kwargs)
@@ -146,10 +181,17 @@ class CookieJar:
         same name, the old cookie is deleted).
         '''
         
+        if not isinstance(cookie, LiveCookie):
+            cookie = LiveCookie(cookie.name, cookie.value, **cookie.attributes)
+        
         if cookie.valid():
             self.cookies[cookie.name] = cookie
         else:
             del self.cookies[cookie.name]
+    
+    def valid_cookies(self):
+        # XXX hack relying on current internals of CookieDict
+        return [cookie for cookie in self.cookies.cookies.values() if cookie.valid()]
     
     def build_cookie_header(self):
         '''Creates value for a Cookie header, as would be sent by a user agent,
@@ -159,7 +201,10 @@ class CookieJar:
         '''
         
         cookies = []
-        for cookie in self.cookies:
-            if cookie.valid():
-                cookies.append(cookie.name + '=' + cookies.value)
+        for cookie in self.valid_cookies():
+            text = cookie.name + '=' + urllib.quote(cookie.value)
+            cookies.append(text)
         return ', '.join(cookies)
+    
+    def clear(self):
+        self.cookies = CookieDict()
