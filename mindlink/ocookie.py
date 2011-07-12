@@ -77,6 +77,24 @@ class Cookie(RawCookie):
     (http://mrcoles.com/blog/cookies-max-age-vs-expires/)
     '''
 
+class CookieExpirationTime:
+    def __init__(self, value, str=None):
+        self.value = value
+        self.str = str
+    
+    @staticmethod
+    def parse(time_str):
+        time = parse_http_time(time_str)
+        return CookieExpirationTime(time, str=time_str)
+    
+    def __str__(self):
+        return self.as_http_date()
+    
+    def as_http_date(self):
+        if self.str is None:
+            self.str = time.strftime('%a %b %m %d %H:%M:%S %Z %Y', self.value)
+        return self.str
+
 class LiveCookie(RawCookie):
     '''A cookie that tracks its expiration time.'''
     
@@ -99,6 +117,7 @@ class LiveCookie(RawCookie):
             expires = self.issue_time + max_age
         else:
             expires = self.attributes.get('expires')
+        return CookieExpirationTime(expires)
     
     def __setattr__(self, key, value):
         if key == 'issue_time':
