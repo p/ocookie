@@ -132,7 +132,12 @@ class CookieParser:
         name, value = attrs[0].split('=')
         kwargs = {}
         for attr in attrs[1:]:
-            attr_name, attr_value = [field.strip() for field in attr.split('=')]
+            fields = attr.split('=')
+            if len(fields) > 1:
+                attr_name, attr_value = [field.strip() for field in fields]
+            else:
+                attr_name = fields[0].strip()
+                attr_value = True
             attr_name = attr_name.lower()
             if not attr_name in OPTIONAL_ATTRIBUTES_DICT:
                 raise CookieError, "Invalid cookie attribute: %s in cookie: %s" % (attr_name, text)

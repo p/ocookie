@@ -21,6 +21,13 @@ class CookieParserTest(unittest.TestCase):
         self.assertEquals('.cc.edu', cookie.domain)
         self.assertEquals('/', cookie.path)
         self.assertEquals('Mon Jul 11 10:41:15 EDT 2011', cookie.expires)
+    
+    def test_parsing_with_valueless_attributes(self):
+        text = 'foo=bar; httponly'
+        cookie = ocookie.CookieParser.parse_set_cookie_value(text)
+        self.assertEquals('foo', cookie.name)
+        self.assertEquals('bar', cookie.value)
+        self.assertEquals(True, cookie.httponly)
 
 if __name__ == '__main__':
     unittest.main()
