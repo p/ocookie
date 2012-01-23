@@ -77,7 +77,7 @@ class Cookie(RawCookie):
     (http://mrcoles.com/blog/cookies-max-age-vs-expires/)
     '''
 
-class CookieExpirationTime:
+class CookieExpirationTime(object):
     def __init__(self, value, str=None):
         self.value = value
         self.str = str
@@ -125,7 +125,7 @@ class LiveCookie(RawCookie):
         else:
             RawCookie.__setattr__(self, key, value)
 
-class CookieParser:
+class CookieParser(object):
     @staticmethod
     def parse_set_cookie_value(text):
         attrs = text.split(';')
@@ -152,14 +152,14 @@ class CookieParser:
             raise CookieError, "Not a Set-Cookie header: %s" % text
         return self.parse_set_cookie_value(value.strip())
 
-class CookieList:
+class CookieList(object):
     '''A list of cookies.
     
     Use when the order of cookies is significant, or when setting
     multiple cookies of the same name.
     '''
 
-class CookieDict:
+class CookieDict(object):
     '''A dictionary of cookies.
     
     Use when retrieving cookies by name is desired.
@@ -183,7 +183,7 @@ class CookieDict:
     def __setitem__(self, name, cookie):
         self.cookies[name] = cookie
 
-class CookieJar:
+class CookieJar(object):
     '''A cookie jar, as is commonly implemented by user agents.
     
     Understands cookie expiration. Setting a cookie with an invalid or
