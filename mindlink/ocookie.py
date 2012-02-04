@@ -123,7 +123,9 @@ class LiveCookie(RawCookie):
             expires = self.issue_time + max_age
         else:
             expires = self.attributes.get('expires')
-        return CookieExpirationTime(expires)
+        if expires is not None:
+            expires = CookieExpirationTime(expires)
+        return expires
     
     def __setattr__(self, key, value):
         if key == 'issue_time':
