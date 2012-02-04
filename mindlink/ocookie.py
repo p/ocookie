@@ -208,9 +208,12 @@ class CookieJar(object):
         if not isinstance(cookie, LiveCookie):
             cookie = LiveCookie(cookie.name, cookie.value, **cookie.attributes)
         
+        # valid means not expired
         if cookie.valid():
             self.cookies[cookie.name] = cookie
-        else:
+        # if cookie was never set, and we are asked to set it with
+        # an expiration date in the past, do nothing
+        elif cookie.name in self.cookies:
             del self.cookies[cookie.name]
     
     def valid_cookies(self):
