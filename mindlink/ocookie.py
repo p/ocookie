@@ -61,6 +61,12 @@ class RawCookie(object):
             if not key_lower in OPTIONAL_ATTRIBUTES_DICT:
                 raise AttributeError("Unrecognized cookie attribute: " + str(key))
             self.attributes[key_lower] = value
+    
+    def __str__(self):
+        attrs = ''
+        for key in self.attributes:
+            attrs += '; %s=%s' % (key, self.attributes[key])
+        return '<%s(%s=%s%s)>' % (self.__class__.__name__, self.name, self.value, attrs)
 
 class Cookie(RawCookie):
     '''A canonicalized cookie.
