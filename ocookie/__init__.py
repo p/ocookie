@@ -190,6 +190,9 @@ class CookieDict(object):
     
     def __setitem__(self, name, cookie):
         self.cookies[name] = cookie
+    
+    def has_key(self, name):
+        return self.cookies.has_key(name)
 
 class CookieJar(object):
     '''A cookie jar, as is commonly implemented by user agents.
