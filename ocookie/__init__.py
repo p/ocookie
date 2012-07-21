@@ -42,7 +42,7 @@ class RawCookie(object):
         self.name = name
         self.value = value
         # maybe we should only do type conversion in parsers
-        if converted_attributes.has_key('max-age'):
+        if 'max-age' in converted_attributes:
             # XXX check if RFC allows floating point max-age
             converted_attributes['max-age'] = float(converted_attributes['max-age'])
         self.attributes = converted_attributes
@@ -191,8 +191,8 @@ class CookieDict(object):
     def __setitem__(self, name, cookie):
         self.cookies[name] = cookie
     
-    def has_key(self, name):
-        return self.cookies.has_key(name)
+    def __contains__(self, name):
+        return name in self.cookies
 
 class CookieJar(object):
     '''A cookie jar, as is commonly implemented by user agents.
@@ -216,6 +216,9 @@ class CookieJar(object):
     
     def __setitem__(self, name, cookie):
         raise TypeError, 'Use add to put cookies into a CookieJar'
+    
+    def __contains__(self, name):
+        return name in self.cookie_dict
     
     def add(self, cookie):
         '''Adds a cookie to the cookie jar.
@@ -258,9 +261,6 @@ class CookieJar(object):
     
     def clear(self):
         self.cookies = CookieDict()
-    
-    def has_key(self, key):
-        return key in self.cookie_dict
 
 def cookie_list_to_dict(cookie_list):
     cookie_dict = CookieDict()
