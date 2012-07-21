@@ -203,7 +203,7 @@ class CookieJar(object):
     '''
     
     def __init__(self):
-        self.cookies = CookieDict()
+        self.cookie_dict = CookieDict()
     
     def add(self, cookie):
         '''Adds a cookie to the cookie jar.
@@ -221,15 +221,15 @@ class CookieJar(object):
         
         # valid means not expired
         if cookie.valid():
-            self.cookies[cookie.name] = cookie
+            self.cookie_dict[cookie.name] = cookie
         # if cookie was never set, and we are asked to set it with
         # an expiration date in the past, do nothing
-        elif cookie.name in self.cookies:
-            del self.cookies[cookie.name]
+        elif cookie.name in self.cookie_dict:
+            del self.cookie_dict[cookie.name]
     
     def valid_cookies(self):
         # XXX hack relying on current internals of CookieDict
-        return [cookie for cookie in self.cookies.cookies.values() if cookie.valid()]
+        return [cookie for cookie in self.cookie_dict.cookies.values() if cookie.valid()]
     
     def build_cookie_header(self):
         '''Creates value for a Cookie header, as would be sent by a user agent,
@@ -246,6 +246,9 @@ class CookieJar(object):
     
     def clear(self):
         self.cookies = CookieDict()
+    
+    def has_key(self, key):
+        return key in self.cookie_dict
 
 def cookie_list_to_dict(cookie_list):
     cookie_dict = CookieDict()
