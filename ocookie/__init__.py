@@ -205,6 +205,18 @@ class CookieJar(object):
     def __init__(self):
         self.cookie_dict = CookieDict()
     
+    def __iter__(self):
+        return self.cookie_dict.__iter__()
+    
+    def __delitem__(self, name):
+        del self.cookie_dict[name]
+    
+    def __getitem__(self, name):
+        return self.cookie_dict[name]
+    
+    def __setitem__(self, name, cookie):
+        raise TypeError, 'Use add to put cookies into a CookieJar'
+    
     def add(self, cookie):
         '''Adds a cookie to the cookie jar.
         

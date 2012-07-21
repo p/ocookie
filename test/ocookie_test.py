@@ -10,6 +10,21 @@ class CookieTest(unittest.TestCase):
         self.assertTrue(cookie.httponly)
         self.assertFalse(cookie.secure)
 
+class CookieJarTest(unittest.TestCase):
+    def test_add(self):
+        cookie_jar = ocookie.CookieJar()
+        cookie = ocookie.Cookie('foo', 'bar')
+        cookie_jar.add(cookie)
+        
+        self.assertTrue('foo' in cookie_jar)
+        # Not currently supported
+        #self.assertTrue(cookie in cookie_jar)
+        
+        # negative assertions
+        self.assertFalse('bar' in cookie_jar)
+        #bar_cookie = ocookie.Cookie('bar', 'bar')
+        #self.assertFalse(bar_cookie in cookie_jar)
+
 class CookieParserTest(unittest.TestCase):
     def test_parsing(self):
         text = 'foo=bar'
