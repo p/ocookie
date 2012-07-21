@@ -2,9 +2,13 @@ import unittest, time
 
 import ocookie
 
-class OcookieTest(unittest.TestCase):
-    def test_foo(self):
-        pass
+class CookieTest(unittest.TestCase):
+    def test_construction(self):
+        cookie = ocookie.Cookie('foo', 'bar', httponly=True)
+        self.assertEquals('foo', cookie.name)
+        self.assertEquals('bar', cookie.value)
+        self.assertTrue(cookie.httponly)
+        self.assertFalse(cookie.secure)
 
 class CookieParserTest(unittest.TestCase):
     def test_parsing(self):
