@@ -1,6 +1,6 @@
 import unittest, time
 
-from mindlink import ocookie
+import ocookie
 
 class OcookieTest(unittest.TestCase):
     def test_foo(self):
