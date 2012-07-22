@@ -24,6 +24,17 @@ class CookieJarTest(unittest.TestCase):
         self.assertFalse('bar' in cookie_jar)
         #bar_cookie = ocookie.Cookie('bar', 'bar')
         #self.assertFalse(bar_cookie in cookie_jar)
+    
+    def test_replacement(self):
+        cookie_jar = ocookie.CookieJar()
+        cookie = ocookie.Cookie('foo', 'bar')
+        cookie_jar.add(cookie)
+        
+        replacement_cookie = ocookie.Cookie('foo', 'quux')
+        cookie_jar.add(replacement_cookie)
+        
+        self.assertTrue('foo' in cookie_jar)
+        self.assertEqual('quux', cookie_jar['foo'].value)
 
 class CookieParserTest(unittest.TestCase):
     def test_parsing(self):
