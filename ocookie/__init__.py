@@ -204,6 +204,10 @@ class CookieDict(object):
     
     def __contains__(self, name):
         return name in self.cookies
+    
+    def cookie_header_value(self):
+        pairs = [name + '=' + self[name].value for name in self]
+        return '; '.join(pairs)
 
 class CookieJar(object):
     '''A cookie jar, as is commonly implemented by user agents.

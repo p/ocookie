@@ -10,6 +10,20 @@ class CookieTest(unittest.TestCase):
         self.assertTrue(cookie.httponly)
         self.assertFalse(cookie.secure)
 
+class CookieDictTest(unittest.TestCase):
+    def test_cookie_header_value_one(self):
+        cookie_dict = ocookie.CookieDict()
+        cookie_dict['a'] = ocookie.Cookie('a', 'b')
+        header_value = cookie_dict.cookie_header_value()
+        self.assertEqual('a=b', header_value)
+    
+    def test_cookie_header_value_two(self):
+        cookie_dict = ocookie.CookieDict()
+        cookie_dict['a'] = ocookie.Cookie('a', 'b')
+        cookie_dict['c'] = ocookie.Cookie('c', 'd')
+        header_value = cookie_dict.cookie_header_value()
+        self.assertEqual('a=b; c=d', header_value)
+
 class CookieJarTest(unittest.TestCase):
     def test_add(self):
         cookie_jar = ocookie.CookieJar()
