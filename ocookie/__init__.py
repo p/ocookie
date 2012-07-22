@@ -135,6 +135,17 @@ class LiveCookie(RawCookie):
 
 class CookieParser(object):
     @staticmethod
+    def parse_cookie_value(text):
+        cookie_dict = {}
+        pairs = text.split(';')
+        for pair in pairs:
+            pair = pair.strip()
+            name, value = pair.split('=')
+            cookie = Cookie(name, value)
+            cookie_dict[name] = cookie
+        return cookie_dict
+    
+    @staticmethod
     def parse_set_cookie_value(text):
         attrs = text.split(';')
         name, value = attrs[0].split('=')

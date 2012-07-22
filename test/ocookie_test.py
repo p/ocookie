@@ -36,6 +36,29 @@ class CookieJarTest(unittest.TestCase):
         self.assertTrue('foo' in cookie_jar)
         self.assertEqual('quux', cookie_jar['foo'].value)
 
+class CookieHeaderValueParsingtest(unittest.TestCase):
+    def test_one(self):
+        value = 'foo=bar'
+        cookie_dict = ocookie.CookieParser.parse_cookie_value(value)
+        self.assertEqual(1, len(cookie_dict))
+        self.assert_('foo' in cookie_dict)
+        self.assertEqual('bar', cookie_dict['foo'].value)
+        
+        # negative checks for sanity
+        self.assert_('bar' not in cookie_dict)
+    
+    def test_two(self):
+        value = 'a=b; c=d'
+        cookie_dict = ocookie.CookieParser.parse_cookie_value(value)
+        self.assertEqual(2, len(cookie_dict))
+        self.assert_('a' in cookie_dict)
+        self.assertEqual('b', cookie_dict['a'].value)
+        self.assert_('c' in cookie_dict)
+        self.assertEqual('d', cookie_dict['c'].value)
+        
+        # negative checks for sanity
+        self.assert_('bar' not in cookie_dict)
+
 class CookieParserTest(unittest.TestCase):
     def test_parsing(self):
         text = 'foo=bar'
