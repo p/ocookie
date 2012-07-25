@@ -275,7 +275,7 @@ class CookieJar(object):
         return ', '.join(cookies)
     
     def clear(self):
-        self.cookies = CookieDict()
+        self.cookie_dict = CookieDict()
 
 def cookie_list_to_dict(cookie_list):
     cookie_dict = CookieDict()

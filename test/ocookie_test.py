@@ -49,6 +49,15 @@ class CookieJarTest(unittest.TestCase):
         
         self.assertTrue('foo' in cookie_jar)
         self.assertEqual('quux', cookie_jar['foo'].value)
+    
+    def test_clear(self):
+        cookie_jar = ocookie.CookieJar()
+        cookie = ocookie.Cookie('foo', 'bar')
+        cookie_jar.add(cookie)
+        assert 'foo' in cookie_jar
+        
+        cookie_jar.clear()
+        assert 'foo' not in cookie_jar
 
 class CookieHeaderValueParsingtest(unittest.TestCase):
     def test_one(self):
