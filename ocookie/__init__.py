@@ -205,6 +205,9 @@ class CookieDict(object):
     def __contains__(self, name):
         return name in self.cookies
     
+    def __len__(self):
+        return len(self.cookies)
+    
     def cookie_header_value(self):
         pairs = [name + '=' + self[name].value for name in self]
         return '; '.join(pairs)
