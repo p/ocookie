@@ -100,6 +100,8 @@ def parse_http_time(time_str):
 
 class CookieExpirationTime(object):
     def __init__(self, value, str=None):
+        if not isinstance(value, int) and not isinstance(value, float):
+            raise ValueError('Value must be int or float: %s' % value)
         self.value = value
         self.str = str
     
@@ -113,7 +115,7 @@ class CookieExpirationTime(object):
     
     def as_http_date(self):
         if self.str is None:
-            self.str = time.strftime(strftime_format, self.value)
+            self.str = time.strftime(strftime_format, time.gmtime(self.value))
         return self.str
 
 class LiveCookie(RawCookie):
@@ -124,22 +126,22 @@ class LiveCookie(RawCookie):
         RawCookie.__init__(self, name, value, **attributes)
     
     def valid(self):
-        expires = self.expires
+        expires = self.expires_timestamp
         if expires is None:
             # valid until the end of session
             # assume as long as we're alive, we are in the session
             return True
-        return expires < time.time()
+        return expires > time.time()
     
     @property
-    def expires(self):
+    def expires_timestamp(self):
         max_age = self.attributes.get('max-age')
         if max_age is not None:
             expires = self.issue_time + max_age
         else:
             expires = self.attributes.get('expires')
-        if expires is not None:
-            expires = CookieExpirationTime(expires)
+            if expires is not None:
+                expires = CookieExpirationTime.parse(expires).value
         return expires
     
     def __setattr__(self, key, value):
