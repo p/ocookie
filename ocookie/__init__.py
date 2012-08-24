@@ -91,8 +91,11 @@ strftime_format = '%a %b %m %d %H:%M:%S %Z %Y'
 strftime_format2 = '%a, %d %b %Y %H:%M:%S %Z'
 
 def parse_http_time(time_str):
-    import calendar
-    value = calendar.timegm(time.strptime(time_str, strftime_format2))
+    if time_str:
+        import calendar
+        value = calendar.timegm(time.strptime(time_str, strftime_format2))
+    else:
+        value = None
     return value
 
 class CookieExpirationTime(object):
