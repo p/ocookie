@@ -67,6 +67,10 @@ class RawCookie(object):
         for key in self.attributes:
             attrs += '; %s=%s' % (key, self.attributes[key])
         return '<%s(%s=%s%s)>' % (self.__class__.__name__, self.name, self.value, attrs)
+    
+    @property
+    def expires_timestamp(self):
+        return CookieExpirationTime.parse(self.expires).value
 
 class Cookie(RawCookie):
     '''A canonicalized cookie.
@@ -83,6 +87,14 @@ class Cookie(RawCookie):
     (http://mrcoles.com/blog/cookies-max-age-vs-expires/)
     '''
 
+strftime_format = '%a %b %m %d %H:%M:%S %Z %Y'
+strftime_format2 = '%a, %d %b %Y %H:%M:%S %Z'
+
+def parse_http_time(time_str):
+    import calendar
+    value = calendar.timegm(time.strptime(time_str, strftime_format2))
+    return value
+
 class CookieExpirationTime(object):
     def __init__(self, value, str=None):
         self.value = value
@@ -98,7 +110,7 @@ class CookieExpirationTime(object):
     
     def as_http_date(self):
         if self.str is None:
-            self.str = time.strftime('%a %b %m %d %H:%M:%S %Z %Y', self.value)
+            self.str = time.strftime(strftime_format, self.value)
         return self.str
 
 class LiveCookie(RawCookie):

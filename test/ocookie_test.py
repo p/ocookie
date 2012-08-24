@@ -105,5 +105,11 @@ class CookieParserTest(unittest.TestCase):
         self.assertEquals('bar', cookie.value)
         self.assertEquals(True, cookie.httponly)
 
+class TimeParsingTest(unittest.TestCase):
+    def test_time_parsing(self):
+        text = 'Sun, 01 Jan 2012 00:00:00 GMT'
+        time = ocookie.parse_http_time(text)
+        self.assertEquals(1325376000, time)
+
 if __name__ == '__main__':
     unittest.main()
