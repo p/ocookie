@@ -23,6 +23,30 @@ class CookieDictTest(unittest.TestCase):
         cookie_dict['c'] = ocookie.Cookie('c', 'd')
         header_value = cookie_dict.cookie_header_value()
         self.assertEqual('a=b; c=d', header_value)
+    
+    def test_deletion(self):
+        cookie_dict = ocookie.CookieDict()
+        cookie_dict['a'] = ocookie.Cookie('a', 'b')
+        self.assertTrue('a' in cookie_dict)
+        self.assertTrue('c' not in cookie_dict)
+        cookie_dict['c'] = ocookie.Cookie('c', 'd')
+        self.assertTrue('c' in cookie_dict)
+        
+        del cookie_dict['c']
+        self.assertTrue('c' not in cookie_dict)
+    
+    def test_access(self):
+        cookie_dict = ocookie.CookieDict()
+        cookie_dict['a'] = ocookie.Cookie('a', 'b')
+        a = cookie_dict['a']
+        self.assertEqual('b', a.value)
+    
+    def test_overwrite(self):
+        cookie_dict = ocookie.CookieDict()
+        cookie_dict['a'] = ocookie.Cookie('a', 'b')
+        cookie_dict['a'] = ocookie.Cookie('a', 'c')
+        a = cookie_dict['a']
+        self.assertEqual('c', a.value)
 
 class CookieJarTest(unittest.TestCase):
     def test_add(self):
