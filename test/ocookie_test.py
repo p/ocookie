@@ -83,7 +83,7 @@ class CookieJarTest(unittest.TestCase):
         cookie_jar.clear()
         assert 'foo' not in cookie_jar
 
-class CookieHeaderValueParsingtest(unittest.TestCase):
+class CookieHeaderValueParsingTest(unittest.TestCase):
     def test_one(self):
         value = 'foo=bar'
         cookie_dict = ocookie.CookieParser.parse_cookie_value(value)
