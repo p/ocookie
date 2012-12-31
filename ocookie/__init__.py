@@ -4,8 +4,8 @@ class CookieError(StandardError):
     pass
 
 OPTIONAL_ATTRIBUTES = [
-    'expires', 'path', 'comment', 'domain', 'max-age', 'secure',
-    'version', 'httponly',
+    'comment', 'domain', 'expires', 'httponly', 'max-age', 'path', 'secure',
+    'version',
 ]
 ALL_ATTRIBUTES = [
     'name', 'value'
