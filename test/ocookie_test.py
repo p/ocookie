@@ -109,13 +109,17 @@ class CookieHeaderValueParsingTest(unittest.TestCase):
 class CookieParserTest(unittest.TestCase):
     def test_parsing(self):
         text = 'foo=bar'
-        cookie = ocookie.CookieParser.parse_set_cookie_value(text)
+        cookies = ocookie.CookieParser.parse_set_cookie_value(text)
+        self.assertEquals(1, len(cookies))
+        cookie = cookies[0]
         self.assertEquals('foo', cookie.name)
         self.assertEquals('bar', cookie.value)
     
     def test_parsing_with_attributes(self):
         text = 'foo=bar; domain=.cc.edu; path=/; expires=Mon Jul 11 10:41:15 EDT 2011'
-        cookie = ocookie.CookieParser.parse_set_cookie_value(text)
+        cookies = ocookie.CookieParser.parse_set_cookie_value(text)
+        self.assertEquals(1, len(cookies))
+        cookie = cookies[0]
         self.assertEquals('foo', cookie.name)
         self.assertEquals('bar', cookie.value)
         self.assertEquals('.cc.edu', cookie.domain)
@@ -124,10 +128,20 @@ class CookieParserTest(unittest.TestCase):
     
     def test_parsing_with_valueless_attributes(self):
         text = 'foo=bar; httponly'
-        cookie = ocookie.CookieParser.parse_set_cookie_value(text)
+        cookies = ocookie.CookieParser.parse_set_cookie_value(text)
+        self.assertEquals(1, len(cookies))
+        cookie = cookies[0]
         self.assertEquals('foo', cookie.name)
         self.assertEquals('bar', cookie.value)
         self.assertEquals(True, cookie.httponly)
+    
+    def test_phpbb(self):
+        # This is also a multiple cookie value test.
+        # RFC 2109 allows multiple cookies per Set-Cookie header;
+        # RFC 6265 prohibits this
+        value = 'phpbb3_ogtyt_u=1; expires=Tue, 31-Dec-2013 08:37:28 GMT; path=/; domain=func; HttpOnly, phpbb3_ogtyt_k=; expires=Tue, 31-Dec-2013 08:37:28 GMT; path=/; domain=func; HttpOnly, phpbb3_ogtyt_sid=55b57cfe83291063f56aed5d6e108fb5; expires=Tue, 31-Dec-2013 08:37:28 GMT; path=/; domain=func; HttpOnly, phpbb3_ogtyt_u=; expires=Sun, 01-Jan-2012 08:37:28 GMT; path=/; domain=func; HttpOnly, phpbb3_ogtyt_sid=; expires=Sun, 01-Jan-2012 08:37:28 GMT; path=/; domain=func; HttpOnly, phpbb3_ogtyt_u=2; expires=Tue, 31-Dec-2013 08:37:28 GMT; path=/; domain=func; HttpOnly, phpbb3_ogtyt_k=; expires=Tue, 31-Dec-2013 08:37:28 GMT; path=/; domain=func; HttpOnly, phpbb3_ogtyt_sid=23bac1171a6ed998e049b160ff4455e3; expires=Tue, 31-Dec-2013 08:37:28 GMT; path=/; domain=func; HttpOnly'
+        cookies = ocookie.CookieParser.parse_set_cookie_value(value)
+        self.assertEquals(8, len(cookies))
 
 class TimeParsingTest(unittest.TestCase):
     def test_time_parsing(self):

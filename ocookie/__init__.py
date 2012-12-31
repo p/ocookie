@@ -19,6 +19,19 @@ for key in ALL_ATTRIBUTES:
     ALL_ATTRIBUTES_DICT[key] = True
 del key
 
+COOKIELIB_ATTRIBUTES_MAP = {
+    'comment_url': 'comment',
+    'domain': 'domain',
+    'expires': 'expires',
+    'path': 'path',
+    'secure': 'secure',
+    'version': 'version',
+}
+
+COOKIELIB_NONSTANDARD_ATTRIBUTES_MAP = {
+    'httponly': 'httponly',
+}
+
 class RawCookie(object):
     '''An unaltered cookie from a Set-Cookie header.
     
@@ -150,6 +163,23 @@ class LiveCookie(RawCookie):
         else:
             RawCookie.__setattr__(self, key, value)
 
+# from_cookielib_cookie is here to avoid a circular dependency
+# between this module and cookielibbridge
+def from_cookielib_cookie(cl_cookie):
+    args = {}
+    for cl_key in COOKIELIB_ATTRIBUTES_MAP:
+        key = COOKIELIB_ATTRIBUTES_MAP[cl_key]
+        value = getattr(cl_cookie, cl_key)
+        if value is not None:
+            args[key] = value
+    for cl_key in COOKIELIB_NONSTANDARD_ATTRIBUTES_MAP:
+        key = COOKIELIB_NONSTANDARD_ATTRIBUTES_MAP[cl_key]
+        value = cl_cookie.get_nonstandard_attr(cl_key)
+        if value is not None:
+            args[key] = value
+    cookie = Cookie(cl_cookie.name, cl_cookie.value, **args)
+    return cookie
+
 class CookieParser(object):
     @staticmethod
     def parse_cookie_value(text):
@@ -163,7 +193,12 @@ class CookieParser(object):
         return cookie_dict
     
     @staticmethod
-    def parse_set_cookie_value(text):
+    def parse_set_cookie_value_quickly(text):
+        '''Performs quick parsing of a limited subset of possible Set-Cookie
+        header values. Specifically this does not handle multiple cookies
+        per header. Use with caution.
+        '''
+        
         attrs = text.split(';')
         name, value = attrs[0].split('=')
         kwargs = {}
@@ -178,7 +213,24 @@ class CookieParser(object):
             if not attr_name in OPTIONAL_ATTRIBUTES_DICT:
                 raise CookieError, "Invalid cookie attribute: %s in cookie: %s" % (attr_name, text)
             kwargs[attr_name.replace('-', '_')] = attr_value
-        return Cookie(name, value, **kwargs)
+        return (Cookie(name, value, **kwargs),)
+    
+    @staticmethod
+    def parse_set_cookie_value(text):
+        '''Performs a hopefully correct parsing of Set-Cookie header value,
+        delegating to cookielib to do all the work.
+        '''
+        
+        #import email.message
+        #text = "Set-Cookie: %s\n\n" % text
+        #message = email.message.Message()
+        #message.set_payload(text)
+        
+        from . import cookielibbridge
+        cl_cookies = cookielibbridge.parse_set_cookie_value(text)
+        assert len(cl_cookies) == 1
+        cookies = [from_cookielib_cookie(cl_cookie) for cl_cookie in cl_cookies]
+        return cookies
     
     @staticmethod
     def parse_set_cookie_header(text):

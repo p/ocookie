@@ -22,4 +22,7 @@ At the same time ocookie is intended to be easy to use:
 
 Note: API is not yet stable.
 
+Security warning: Handling of headers spanning multiple lines has not been
+audited. Use in a trusted environment only.
+
 Released under the MIT license.
