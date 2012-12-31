@@ -1,6 +1,14 @@
-from . import CookieParser, CookieDict
+from . import CookieParser
 
 def parse_cookies(httplib_set_cookie_headers):
+    '''Parses a list of Set-Cookie and Set-Cookie2 headers.
+    
+    httplib_set_cookie_headers is a sequence of strings, each string being
+    a full header string (e.g. "Set-Cookie: foo=bar; path=/").
+    
+    Returns a list of Cookie instances.
+    '''
+    
     cookies = []
     for header in httplib_set_cookie_headers:
         header = header.strip()
@@ -11,6 +19,11 @@ def parse_cookies(httplib_set_cookie_headers):
     return cookies
 
 def parse_response_cookies(httplib_response):
+    '''Parses cookies in an httplib Response.
+    
+    Returns a list of Cookie instances.
+    '''
+    
     # RFC 2616 specifies that multiple headers can be combined into
     # a single header by joining their values with commas
     # (http://stackoverflow.com/questions/2454494/urllib2-multiple-set-cookie-headers-in-response).
