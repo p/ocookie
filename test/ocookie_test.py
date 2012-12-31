@@ -134,6 +134,14 @@ class TimeParsingTest(unittest.TestCase):
         text = 'Sun, 01 Jan 2012 00:00:00 GMT'
         time = ocookie.parse_http_time(text)
         self.assertEquals(1325376000, time)
+    
+    def test_time_parsing_netscape_yyyy(self):
+        # RFC 2109 specifies:
+        # Wdy, DD-Mon-YY HH:MM:SS GMT
+        # Nowadays YY is replaced by YYYY for sanity.
+        text = 'Sun, 01-Jan-2012 00:00:00 GMT'
+        time = ocookie.parse_http_time(text)
+        self.assertEquals(1325376000, time)
 
 if __name__ == '__main__':
     unittest.main()

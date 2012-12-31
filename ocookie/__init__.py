@@ -89,11 +89,15 @@ class Cookie(RawCookie):
 
 strftime_format = '%a %b %m %d %H:%M:%S %Z %Y'
 strftime_format2 = '%a, %d %b %Y %H:%M:%S %Z'
+strftime_format_netscape = '%a, %d-%b-%Y %H:%M:%S %Z'
 
 def parse_http_time(time_str):
     if time_str:
         import calendar
-        value = calendar.timegm(time.strptime(time_str, strftime_format2))
+        try:
+            value = calendar.timegm(time.strptime(time_str, strftime_format2))
+        except ValueError:
+            value = calendar.timegm(time.strptime(time_str, strftime_format_netscape))
     else:
         value = None
     return value
