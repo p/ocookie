@@ -285,7 +285,7 @@ class CookieJar(object):
         # XXX hack relying on current internals of CookieDict
         return [cookie for cookie in self.cookie_dict.cookies.values() if cookie.valid()]
     
-    def build_cookie_header(self):
+    def build_cookie_header_value(self):
         '''Creates value for a Cookie header, as would be sent by a user agent,
         from cookies currently in the jar.
         
@@ -296,7 +296,7 @@ class CookieJar(object):
         for cookie in self.valid_cookies():
             text = cookie.name + '=' + urllib.quote(cookie.value)
             cookies.append(text)
-        return ', '.join(cookies)
+        return '; '.join(cookies)
     
     def clear(self):
         self.cookie_dict = CookieDict()
