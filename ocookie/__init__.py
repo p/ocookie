@@ -232,6 +232,9 @@ class CookieDict(object):
     def cookie_header_value(self):
         pairs = [name + '=' + self[name].value for name in self if self[name].value is not None and self[name].value.strip() != '']
         return '; '.join(pairs)
+    
+    def keys(self):
+        return self.cookies.keys()
 
 class CookieJar(object):
     '''A cookie jar, as is commonly implemented by user agents.
@@ -302,6 +305,9 @@ class CookieJar(object):
     
     def clear(self):
         self.cookie_dict = CookieDict()
+    
+    def keys(self):
+        return self.cookie_dict.keys()
 
 def cookie_list_to_dict(cookie_list):
     cookie_dict = CookieDict()
