@@ -294,8 +294,10 @@ class CookieJar(object):
         
         cookies = []
         for cookie in self.valid_cookies():
-            text = cookie.name + '=' + urllib.quote(cookie.value)
-            cookies.append(text)
+            # do not send empty cookies
+            if cookie.value is not None and cookie.value.strip() != '':
+                text = cookie.name + '=' + urllib.quote(cookie.value)
+                cookies.append(text)
         return '; '.join(cookies)
     
     def clear(self):

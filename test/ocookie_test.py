@@ -107,6 +107,15 @@ class CookieJarTest(unittest.TestCase):
         
         expected = 'foo=foo-value; bar=bar-value'
         self.assertEqual(expected, cookie_jar.build_cookie_header_value())
+    
+    def test_build_cookie_header_value_empty(self):
+        cookie_jar = ocookie.CookieJar()
+        cookie_jar.add(ocookie.Cookie('foo', 'foo-value'))
+        cookie_jar.add(ocookie.Cookie('bar', ''))
+        cookie_jar.add(ocookie.Cookie('quux', None))
+        
+        expected = 'foo=foo-value'
+        self.assertEqual(expected, cookie_jar.build_cookie_header_value())
 
 class CookieHeaderValueParsingTest(unittest.TestCase):
     def test_one(self):
