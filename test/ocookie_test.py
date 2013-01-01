@@ -24,6 +24,14 @@ class CookieDictTest(unittest.TestCase):
         header_value = cookie_dict.cookie_header_value()
         self.assertEqual('a=b; c=d', header_value)
     
+    def test_cookie_header_value_empty(self):
+        cookie_dict = ocookie.CookieDict()
+        cookie_dict['a'] = ocookie.Cookie('a', 'aa')
+        cookie_dict['b'] = ocookie.Cookie('b', '')
+        cookie_dict['c'] = ocookie.Cookie('c', None)
+        header_value = cookie_dict.cookie_header_value()
+        self.assertEqual('a=aa', header_value)
+    
     def test_deletion(self):
         cookie_dict = ocookie.CookieDict()
         cookie_dict['a'] = ocookie.Cookie('a', 'b')

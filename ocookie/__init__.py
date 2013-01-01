@@ -230,7 +230,7 @@ class CookieDict(object):
         return len(self.cookies)
     
     def cookie_header_value(self):
-        pairs = [name + '=' + self[name].value for name in self]
+        pairs = [name + '=' + self[name].value for name in self if self[name].value is not None and self[name].value.strip() != '']
         return '; '.join(pairs)
 
 class CookieJar(object):
