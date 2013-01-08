@@ -1,6 +1,13 @@
-import time, urllib
+import time
 
 # python 2/3 compatibility
+try:
+    # 3.x and this must be first
+    import urllib.parse as urllib_parse
+except ImportError:
+    # 2.x
+    import urllib as urllib_parse
+
 try:
     # 2.x
     base_exception_class = StandardError
@@ -307,7 +314,7 @@ class CookieJar(object):
         for cookie in self.valid_cookies():
             # do not send empty cookies
             if cookie.value is not None and cookie.value.strip() != '':
-                text = cookie.name + '=' + urllib.quote(cookie.value)
+                text = cookie.name + '=' + urllib_parse.quote(cookie.value)
                 cookies.append(text)
         return '; '.join(cookies)
     
