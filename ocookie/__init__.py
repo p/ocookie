@@ -180,7 +180,7 @@ class CookieParser(object):
                 attr_value = True
             attr_name = attr_name.lower()
             if not attr_name in OPTIONAL_ATTRIBUTES_DICT:
-                raise CookieError, "Invalid cookie attribute: %s in cookie: %s" % (attr_name, text)
+                raise CookieError("Invalid cookie attribute: %s in cookie: %s" % (attr_name, text))
             kwargs[attr_name.replace('-', '_')] = attr_value
         return Cookie(name, value, **kwargs)
     
@@ -189,7 +189,7 @@ class CookieParser(object):
         name, value = text.split(':')
         name = name.lower()
         if name != 'set-cookie' and name != 'set-cookie2':
-            raise CookieError, "Not a Set-Cookie header: %s" % text
+            raise CookieError("Not a Set-Cookie header: %s" % text)
         return self.parse_set_cookie_value(value.strip())
 
 class CookieList(object):
@@ -257,7 +257,7 @@ class CookieJar(object):
         return self.cookie_dict[name]
     
     def __setitem__(self, name, cookie):
-        raise TypeError, 'Use add to put cookies into a CookieJar'
+        raise TypeError('Use add to put cookies into a CookieJar')
     
     def __contains__(self, name):
         return name in self.cookie_dict
