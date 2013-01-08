@@ -22,7 +22,10 @@ class CookieDictTest(unittest.TestCase):
         cookie_dict['a'] = ocookie.Cookie('a', 'b')
         cookie_dict['c'] = ocookie.Cookie('c', 'd')
         header_value = cookie_dict.cookie_header_value()
-        self.assertEqual('a=b; c=d', header_value)
+        self.assertTrue(
+            header_value == 'a=b; c=d' or
+            header_value == 'c=d; a=b'
+        )
     
     def test_cookie_header_value_empty(self):
         cookie_dict = ocookie.CookieDict()
@@ -105,8 +108,11 @@ class CookieJarTest(unittest.TestCase):
         cookie_jar.add(ocookie.Cookie('foo', 'foo-value'))
         cookie_jar.add(ocookie.Cookie('bar', 'bar-value'))
         
-        expected = 'foo=foo-value; bar=bar-value'
-        self.assertEqual(expected, cookie_jar.build_cookie_header_value())
+        actual = cookie_jar.build_cookie_header_value()
+        self.assertTrue(
+            actual == 'foo=foo-value; bar=bar-value' or
+            actual == 'bar=bar-value; foo=foo-value'
+        )
     
     def test_build_cookie_header_value_empty(self):
         cookie_jar = ocookie.CookieJar()
