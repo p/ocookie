@@ -1,6 +1,14 @@
 import time, urllib
 
-class CookieError(StandardError):
+# python 2/3 compatibility
+try:
+    # 2.x
+    base_exception_class = StandardError
+except NameError:
+    # 3.x
+    base_exception_class = Exception
+
+class CookieError(base_exception_class):
     pass
 
 OPTIONAL_ATTRIBUTES = [
