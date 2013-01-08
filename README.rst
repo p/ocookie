@@ -1,4 +1,5 @@
 ocookie - a comprehensive cookie library for Python
+===================================================
 
 The goal of ocookie is to be a *comprehensive* cookie library.
 It should satisfy the needs of any application dealing with cookies.
@@ -21,5 +22,8 @@ At the same time ocookie is intended to be easy to use:
 - Complete documentation
 
 Note: API is not yet stable.
+
+.. image:: https://api.travis-ci.org/p/ocookie.png
+  :target: https://travis-ci.org/p/ocookie
 
 Released under the MIT license.
