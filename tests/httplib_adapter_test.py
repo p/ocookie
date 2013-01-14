@@ -17,10 +17,21 @@ port = 5040
 app.run(port)
 
 class HttplibAdapterTest(unittest.TestCase):
-    def test_cookies(self):
+    def _request(self, url):
         conn = httplib.HTTPConnection('localhost', port)
-        conn.request('GET', '/set')
+        conn.request('GET', url)
         response = conn.getresponse()
+        return response
+    
+    def test_no_cookies(self):
+        response = self._request('/')
+        self.assertEqual(to_bytes('none'), response.read())
+        
+        cookies = ocookie.httplib_adapter.parse_response_cookies(response)
+        self.assertEqual(0, len(cookies))
+    
+    def test_cookies(self):
+        response = self._request('/set')
         self.assertEqual(to_bytes('success'), response.read())
         
         cookies = ocookie.httplib_adapter.parse_response_cookies(response)

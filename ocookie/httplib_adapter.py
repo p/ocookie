@@ -43,7 +43,7 @@ def parse_cookies(httplib_set_cookie_headers):
 # matching headers.
 if py3:
     def parse_response_cookies(httplib_response):
-        values = httplib_response.msg.get_all('set-cookie')
+        values = httplib_response.msg.get_all('set-cookie', [])
         values.extend(httplib_response.msg.get_all('set-cookie2', []))
         cookies = [CookieParser.parse_set_cookie_value(value) for value in values]
         return cookies

@@ -5,6 +5,10 @@ import time as _time
 
 app = bottle.Bottle()
 
+@app.route('/')
+def no_cookies():
+    return 'none'
+
 @app.route('/set')
 def set_cookie():
     bottle.response.set_cookie('visited', 'yes')
