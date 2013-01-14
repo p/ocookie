@@ -1,7 +1,13 @@
+import sys
 import unittest
-import httplib
 import ocookie.httplib_adapter
 from tests import app
+
+py3 = sys.version_info[0] == 3
+if py3:
+    import http.client as httplib
+else:
+    import httplib
 
 port = 5040
 app.run(port)
