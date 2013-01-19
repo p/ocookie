@@ -14,7 +14,9 @@ else:
         return text
 
 port = 5040
-app.run(port)
+
+def setup_module():
+    app.run(port)
 
 class HttplibAdapterTest(unittest.TestCase):
     def _request(self, url):
