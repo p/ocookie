@@ -35,6 +35,13 @@ class CookieDictTest(unittest.TestCase):
         header_value = cookie_dict.cookie_header_value()
         self.assertEqual('a=aa', header_value)
     
+    def test_cookie_header_value_colon(self):
+        cookie_dict = ocookie.CookieDict()
+        cookie_dict['a'] = ocookie.Cookie('a', 'b:c')
+        header_value = cookie_dict.cookie_header_value()
+        # matches urllib2 behavior
+        self.assertEqual('a=b:c', header_value)
+    
     def test_deletion(self):
         cookie_dict = ocookie.CookieDict()
         cookie_dict['a'] = ocookie.Cookie('a', 'b')
@@ -121,6 +128,14 @@ class CookieJarTest(unittest.TestCase):
         cookie_jar.add(ocookie.Cookie('quux', None))
         
         expected = 'foo=foo-value'
+        self.assertEqual(expected, cookie_jar.build_cookie_header_value())
+    
+    def test_build_cookie_header_value_colon(self):
+        cookie_jar = ocookie.CookieJar()
+        cookie_jar.add(ocookie.Cookie('foo', 'a:b'))
+        
+        # matches urllib2 behavior
+        expected = 'foo=a:b'
         self.assertEqual(expected, cookie_jar.build_cookie_header_value())
 
 class CookieHeaderValueParsingTest(unittest.TestCase):

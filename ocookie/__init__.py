@@ -314,7 +314,9 @@ class CookieJar(object):
         for cookie in self.valid_cookies():
             # do not send empty cookies
             if cookie.value is not None and cookie.value.strip() != '':
-                text = cookie.name + '=' + urllib_parse.quote(cookie.value)
+                # XXX try not quoting cookie value
+                # was: urllib_parse.quote(cookie.value)
+                text = cookie.name + '=' + cookie.value
                 cookies.append(text)
         return '; '.join(cookies)
     
