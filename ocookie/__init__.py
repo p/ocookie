@@ -184,7 +184,7 @@ class CookieParser(object):
     @staticmethod
     def parse_set_cookie_value(text):
         attrs = text.split(';')
-        name, value = attrs[0].split('=')
+        name, value = attrs[0].split('=', 1)
         kwargs = {}
         for attr in attrs[1:]:
             fields = attr.split('=')

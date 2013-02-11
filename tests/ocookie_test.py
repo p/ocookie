@@ -183,6 +183,12 @@ class CookieParserTest(unittest.TestCase):
         self.assertEquals('foo', cookie.name)
         self.assertEquals('bar', cookie.value)
         self.assertEquals(True, cookie.httponly)
+    
+    def test_parsing_with_equal_sign(self):
+        text = 'PREF=ID=38a82ea:FF=0:TM=59433:LM=209211:S=ad_B-z5; expires=Wed, 11-Feb-2015 22:59:51 GMT; path=/; domain=.bar.com'
+        cookie = ocookie.CookieParser.parse_set_cookie_value(text)
+        self.assertEquals('PREF', cookie.name)
+        self.assertEquals('ID=38a82ea:FF=0:TM=59433:LM=209211:S=ad_B-z5', cookie.value)
 
 class TimeParsingTest(unittest.TestCase):
     def test_time_parsing(self):
