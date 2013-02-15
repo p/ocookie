@@ -214,7 +214,7 @@ class CookieList(object):
     multiple cookies of the same name.
     '''
 
-class CookieDict(object):
+class CookieDict(dict):
     '''A dictionary of cookies.
     
     Use when retrieving cookies by name is desired.
@@ -222,34 +222,9 @@ class CookieDict(object):
     Setting a cookie overwrites any previously set cookies with the same name.
     '''
     
-    def __init__(self):
-        self.cookies = {}
-    
-    def __iter__(self):
-        return self.cookies.__iter__()
-    
-    def __delitem__(self, name):
-        # catch KeyError here?
-        del self.cookies[name]
-    
-    def __getitem__(self, name):
-        return self.cookies[name]
-    
-    def __setitem__(self, name, cookie):
-        self.cookies[name] = cookie
-    
-    def __contains__(self, name):
-        return name in self.cookies
-    
-    def __len__(self):
-        return len(self.cookies)
-    
     def cookie_header_value(self):
         pairs = [name + '=' + self[name].value for name in self if self[name].value is not None and self[name].value.strip() != '']
         return '; '.join(pairs)
-    
-    def keys(self):
-        return self.cookies.keys()
 
 class CookieJar(object):
     '''A cookie jar, as is commonly implemented by user agents.
@@ -301,7 +276,7 @@ class CookieJar(object):
     
     def valid_cookies(self):
         # XXX hack relying on current internals of CookieDict
-        return [cookie for cookie in self.cookie_dict.cookies.values() if cookie.valid()]
+        return [cookie for cookie in self.cookie_dict.values() if cookie.valid()]
     
     def build_cookie_header_value(self):
         '''Creates value for a Cookie header, as would be sent by a user agent,
