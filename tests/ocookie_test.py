@@ -65,6 +65,16 @@ class CookieDictTest(unittest.TestCase):
         cookie_dict['a'] = ocookie.Cookie('a', 'c')
         a = cookie_dict['a']
         self.assertEqual('c', a.value)
+    
+    def test_copy(self):
+        cookie_dict = ocookie.CookieDict()
+        cookie_dict['a'] = ocookie.Cookie('a', 'c')
+        a = cookie_dict['a']
+        self.assertEqual('c', a.value)
+        
+        copy = ocookie.CookieDict(cookie_dict)
+        assert 'a' in copy
+        self.assertEqual('c', copy['a'].value)
 
 class CookieJarTest(unittest.TestCase):
     def test_add(self):
