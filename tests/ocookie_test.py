@@ -137,6 +137,15 @@ class CookieJarTest(unittest.TestCase):
         # matches urllib2 behavior
         expected = 'foo=a:b'
         self.assertEqual(expected, cookie_jar.build_cookie_header_value())
+    
+    def test_construct_copy(self):
+        cookie_jar = ocookie.CookieJar()
+        cookie_jar.add(ocookie.Cookie('foo', 'a:b'))
+        assert 'foo' in cookie_jar
+        
+        copy = ocookie.CookieJar(cookie_jar)
+        assert 'foo' in copy
+        self.assertEqual(cookie_jar['foo'], copy['foo'])
 
 class CookieHeaderValueParsingTest(unittest.TestCase):
     def test_one(self):

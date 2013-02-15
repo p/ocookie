@@ -234,8 +234,12 @@ class CookieJar(object):
     expire naturally are also automatically removed from the jar.
     '''
     
-    def __init__(self):
-        self.cookie_dict = CookieDict()
+    def __init__(self, cookie_jar=None):
+        if cookie_jar is None:
+            self.cookie_dict = CookieDict()
+        else:
+            # copy
+            self.cookie_dict = CookieDict(cookie_jar.cookie_dict)
     
     def __iter__(self):
         return self.cookie_dict.__iter__()
