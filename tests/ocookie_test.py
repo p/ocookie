@@ -179,6 +179,13 @@ class CookieHeaderValueParsingTest(unittest.TestCase):
         
         # negative checks for sanity
         self.assert_('bar' not in cookie_dict)
+    
+    def test_empty_attribute_at_end(self):
+        value = 'wayback_server=27; Domain=archive.org; Path=/; Expires=Fri, 09-Jan-15 06:44:37 GMT;'
+        cookie = ocookie.CookieParser.parse_set_cookie_value(value)
+        self.assertEqual('wayback_server', cookie.name)
+        self.assertEqual('27', cookie.value)
+        self.assertEqual('Fri, 09-Jan-15 06:44:37 GMT', cookie.expires)
 
 class CookieParserTest(unittest.TestCase):
     def test_parsing(self):

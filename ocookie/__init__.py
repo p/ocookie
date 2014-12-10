@@ -187,6 +187,8 @@ class CookieParser(object):
         name, value = attrs[0].split('=', 1)
         kwargs = {}
         for attr in attrs[1:]:
+            if attr.strip() == '':
+                continue
             fields = attr.split('=')
             if len(fields) > 1:
                 attr_name, attr_value = [field.strip() for field in fields]
