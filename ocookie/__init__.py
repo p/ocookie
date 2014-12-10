@@ -105,6 +105,7 @@ class Cookie(RawCookie):
 strftime_format = '%a %b %m %d %H:%M:%S %Z %Y'
 strftime_format2 = '%a, %d %b %Y %H:%M:%S %Z'
 strftime_format_netscape = '%a, %d-%b-%Y %H:%M:%S %Z'
+strftime_format_netscape_short_year = '%a, %d-%b-%y %H:%M:%S %Z'
 
 def parse_http_time(time_str):
     if time_str:
@@ -112,7 +113,10 @@ def parse_http_time(time_str):
         try:
             value = calendar.timegm(time.strptime(time_str, strftime_format2))
         except ValueError:
-            value = calendar.timegm(time.strptime(time_str, strftime_format_netscape))
+            try:
+                value = calendar.timegm(time.strptime(time_str, strftime_format_netscape))
+            except ValueError:
+                value = calendar.timegm(time.strptime(time_str, strftime_format_netscape_short_year))
     else:
         value = None
     return value

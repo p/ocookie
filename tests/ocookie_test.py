@@ -229,6 +229,13 @@ class TimeParsingTest(unittest.TestCase):
         text = 'Sun, 01-Jan-2012 00:00:00 GMT'
         time = ocookie.parse_http_time(text)
         self.assertEquals(1325376000, time)
+    
+    def test_time_parsing_netscape_yy(self):
+        # Internet Archive:
+        # Fri, 09-Jan-15 06:44:37 GMT
+        text = 'Fri, 09-Jan-15 06:44:37 GMT'
+        time = ocookie.parse_http_time(text)
+        self.assertEquals(1420785877, time)
 
 if __name__ == '__main__':
     unittest.main()
